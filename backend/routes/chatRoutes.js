@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const Message = require("../models/Message");
-const auth = require("../middleware/auth");
+const auth = require("../middlewares/auth");
 
 // get messages
 router.get("/:jobId",auth,async(req,res)=>{

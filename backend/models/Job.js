@@ -22,9 +22,13 @@ const jobSchema = new mongoose.Schema({
   }],
 
   status: {
-    type: String,
-    default: "open"
-  },
+  type: String,
+  enum: ["open", "assigned", "completed", "rejected"],
+  default: "open"
+},
+partnerId: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
+partnerName: { type: String, default: null },
+
   category:String,
 location:String,
 },{timestamps:true});

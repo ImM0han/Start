@@ -1,147 +1,189 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import API from "../api/api";
+import BottomNav from "../components/BottomNav";
 import "../App.css";
 
-export default function Dashboard(){
+export default function Dashboard() {
+  const role = localStorage.getItem("role"); // "partner" | "client"
 
- const [jobs,setJobs] = useState([]);
- const role = localStorage.getItem("role");
- const token = localStorage.getItem("token");
-const [search,setSearch] = useState("");
-const [status,setStatus] = useState("all");
-const [category,setCategory]=useState("");
+  const [me, setMe] = useState(null);
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(false);
 
+  const load = async () => {
+    try {
+      setLoading(true);
 
- useEffect(()=>{
-  API.get("/jobs").then(res=>setJobs(res.data));
- },[]);
+      const meRes = await API.get("/auth/me");
+      const meData = meRes.data;
+      setMe(meData);
 
- // Worker applies job
- const apply = async(id)=>{
-  await API.post(`/jobs/${id}/apply`,{},{
-   headers:{Authorization:`Bearer ${token}`}
-  });
+      // Client view (for now show all)
+      if (role !== "partner") {
+        const all = await API.get("/jobs");
+        setJobs(all.data || []);
+        return;
+      }
 
-  alert("Applied Successfully");
- };
- const complete = async(id)=>{
- await API.post(`/jobs/${id}/complete`,{},{
-  headers:{Authorization:`Bearer ${token}`}
- });
+      // Partner view: skills-filtered categories
+      const skills = meData.skills || [];
+      if (skills.length === 0) {
+        setJobs([]);
+        return;
+      }
 
- alert("Job Completed");
- window.location.reload();
-};
+      const results = await Promise.all(
+        skills.map((c) => API.get(`/jobs?category=${encodeURIComponent(c)}`))
+      );
 
+      const merged = results.flatMap((r) => r.data || []);
+      const unique = Array.from(new Map(merged.map((j) => [j._id, j])).values());
 
- // Client accepts worker
- const accept = async(jobId,workerId)=>{
-  await API.post(`/jobs/${jobId}/accept`,
-   {workerId},
-   {headers:{Authorization:`Bearer ${token}`}}
-  );
+      // Partner should see open jobs only
+      const openOnly = unique.filter((j) => (j.status || "open") === "open");
+      setJobs(openOnly);
+    } catch (err) {
+      alert(err?.response?.data?.msg || "Failed to load dashboard");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  alert("Worker Accepted");
-  window.location.reload();
- };
+  useEffect(() => {
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
- return(
-  <div className="dashboard">
+  // Partner: toggle online
+  const toggleOnline = async () => {
+    if (!me) return;
+    const next = !(me.online ?? true);
 
-   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-    <h2>Available Gigs</h2>
+    setMe((p) => ({ ...p, online: next }));
+    try {
+      await API.put("/auth/me", { online: next });
+    } catch {
+      setMe((p) => ({ ...p, online: !next }));
+      alert("Failed to update online status");
+    }
+  };
 
-    {role==="client" && (
-     <button onClick={()=>window.location="/post"}>
-      Post Job
-     </button>
-    )}
-    <button onClick={()=>window.location="/myjobs"}>
- My Jobs
-</button>
-<input
- placeholder="Search jobs..."
- value={search}
- onChange={e=>setSearch(e.target.value)}
-/>
+  // Accept/Reject
+  const acceptJob = async (id) => {
+    try {
+      await API.put(`/jobs/${id}/accept`);
+      await load();
+    } catch (err) {
+      alert(err?.response?.data?.msg || "Accept failed");
+    }
+  };
 
-<select onChange={e=>setCategory(e.target.value)}>
- <option value="">All Categories</option>
- <option value="coding">Coding</option>
- <option value="design">Design</option>
- <option value="plumbing">Plumbing</option>
-</select>
- 
+  const rejectJob = async (id) => {
+    try {
+      await API.put(`/jobs/${id}/reject`);
+      await load();
+    } catch (err) {
+      alert(err?.response?.data?.msg || "Reject failed");
+    }
+  };
 
-<select onChange={e=>setStatus(e.target.value)}>
- <option value="all">All</option>
- <option value="open">Open</option>
- <option value="assigned">Assigned</option>
- <option value="completed">Completed</option>
-</select>
+  const name = useMemo(() => me?.name || localStorage.getItem("name") || "User", [me]);
+  const online = useMemo(() => me?.online ?? true, [me]);
+  const wallet = useMemo(() => Number(me?.balance ?? 0), [me]);
 
-   </div>
+  const formatMoney = (n) =>
+    Number(n || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-   <div className="job-grid">
+  const distanceText = (job) => {
+    if (job.distance) return `${job.distance} miles`;
+    const seed = (job._id || "").slice(-2);
+    const x = parseInt(seed, 16);
+    const val = Number.isFinite(x) ? (x % 50) / 10 + 0.6 : 2.5;
+    return `${val.toFixed(1)} miles`;
+  };
 
-    {jobs
- .filter(j=>j.title.toLowerCase().includes(search.toLowerCase()))
- .filter(j=>status==="all" ? true : j.status===status)
- .filter(j=>category ? j.category===category : true)
- .map(job=>(
+  const payText = (job) => {
+    const p = job.pricePerDay ?? job.budget ?? job.pay ?? 200;
+    return `$ ${p}/day`;
+  };
 
+  return (
+    <div className="webShell">
+      <div className="webContainer">
+        {/* Responsive nav: desktop top bar, mobile fixed bottom */}
+        <BottomNav />
 
-     <div className="job-card" key={job._id}>
+        {/* Header (green like screenshot) */}
+       <div className="dashGreen">
+  {/* LEFT = Wallet */}
+  <div className="dashGreenLeft">
+    <div className="dashWalletLabel">Wallet Balance</div>
+    <div className="dashWalletValue">₹ {formatMoney(wallet)}</div>
+  </div>
 
-      <h3>{job.title}</h3>
-      <p>{job.description}</p>
-      <p>Category: {job.category}</p>
-<p>Location: {job.location}</p>
-    <button onClick={()=>window.location=`/chat/${job._id}`}>
- Chat
-</button>
-{job.chatCount>0 && <span style={{color:"red"}}>●</span>}
+  {/* RIGHT = Name + role + status */}
+  <div className="dashGreenRight">
+    <div className="dashUserName">{name}</div>
+    <div className="dashMiniRow">
+      <span className="dashRole">{role}</span>
 
-
-      <div className="job-footer">
- <span>₹{job.price} | {job.status}</span>
-
- {role==="worker" && job.status==="open" && (
-  <button onClick={()=>apply(job._id)}>Apply</button>
- )}
-
- {role==="client" && job.status==="assigned" && (
-  <button onClick={()=>complete(job._id)}>Complete</button>
- )}
+      {role === "partner" && (
+        <button type="button" className="dashOnlineBtn" onClick={toggleOnline}>
+          <span className={online ? "dashDot on" : "dashDot off"} />
+          {online ? "Online" : "Offline"}
+        </button>
+      )}
+    </div>
+  </div>
 </div>
 
 
-      {/* Client sees applicants */}
-      {role==="client" && job.applicants?.length>0 && (
-       <div style={{marginTop:10}}>
-        <b>Applicants</b>
+        <h2 className="nearbyTitleWeb">Nearby Jobs</h2>
 
-        {job.applicants.map(worker=>(
- <div key={worker._id}>
-  {worker.name}
-              {job.workerId?._id===worker._id && <span> (Assigned)</span>}
-          <button
-           style={{marginTop:5}}
-           onClick={()=>accept(job._id,worker._id)}
-              disabled={job.workerId}
-          >
-           Accept Worker
-          </button>
-         </div>
-        ))}
-       </div>
-      )}
+        {role === "partner" && (me?.skills?.length || 0) === 0 && (
+          <div className="pEmpty">
+            Select your skills in <b>Profile</b> to see matching jobs.
+          </div>
+        )}
 
-     </div>
-    ))}
+        {loading && <div className="pLoading">Loading...</div>}
 
-   </div>
+        {!loading && (
+          <div className="jobsGrid">
+            {jobs.map((job) => (
+              <div key={job._id} className="pCard">
+                <div className="pCardTop">
+                  <div className="pJobTitle">{cap(job.category || "Job")}</div>
+                  <div className="pPill">{cap(job.category || "Category")}</div>
+                </div>
 
-  </div>
- );
+                <div className="pMeta">📍 {distanceText(job)}</div>
+                <div className="pPay">{payText(job)}</div>
+                <div className="pDesc">{job.description || job.details || "No description"}</div>
+
+                {role === "partner" && (
+                  <div className="pActions">
+                    <button className="pAccept" onClick={() => acceptJob(job._id)}>
+                      Accept
+                    </button>
+                    <button className="pReject" onClick={() => rejectJob(job._id)}>
+                      Reject
+                    </button>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* spacer so mobile bottom nav doesn't cover content */}
+        <div className="mobileNavSpacer" />
+      </div>
+    </div>
+  );
+}
+
+function cap(s) {
+  if (!s) return "";
+  return s.charAt(0).toUpperCase() + s.slice(1);
 }

@@ -1,48 +1,107 @@
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import API from "../api/api";
+import "../App.css";
 
 export default function Login() {
-  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [showPass, setShowPass] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const submit = async () => {
+  const navigate = useNavigate();
+
+  const submit = async (e) => {
+    e.preventDefault();
     try {
-      const res = await API.post("/auth/login", { email, password });
+      setLoading(true);
+
+      const res = await API.post("/auth/login", { phone, password });
+
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("role", res.data.user.role);
-      window.location = "/dashboard";
+      localStorage.setItem("name", res.data.user.name);
+
+      navigate("/dashboard");
     } catch (err) {
-      alert(err.response.data);
+      alert(err?.response?.data?.msg || err?.response?.data || "Login failed");
+    } finally {
+      setLoading(false);
     }
   };
 
-  return (
-    <div style={{ padding: 40 }}>
-      <h2>Login</h2>
-
-      <input placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
-      <br />
-
-      <input
-        placeholder="Password"
-        type="password"
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <br />
-
-      <button onClick={submit}>Login</button>
-
-      <br />
-      <br />
-      <p>
-        New user?{" "}
-        <span
-          style={{ color: "blue", cursor: "pointer" }}
-          onClick={() => (window.location = "/register")}
-        >
-          Register here
-        </span>
-      </p>
+ return (
+  <div className="authPage">
+    <div className="authHeader">
+      <div className="authHeaderIcon">✈</div>
+      <h1 className="authHeaderTitle">Welcome Back</h1>
+      <p className="authHeaderSub">Sign in with your phone number</p>
     </div>
-  );
+
+    <div className="authContainer">
+      <div className="authCardWeb">
+
+        <form onSubmit={submit}>
+          <label className="labelSm">Phone Number</label>
+          <div className="inputRow">
+            <span className="icon">📱</span>
+            <input
+              className="inp"
+              type="tel"
+              value={phone}
+              onChange={(e) =>
+                setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))
+              }
+              placeholder="10 digit phone"
+              maxLength={10}
+              required
+            />
+          </div>
+
+          <label className="labelSm">Password</label>
+          <div className="inputRow">
+            <span className="icon">🔒</span>
+            <input
+              className="inp"
+              type={showPass ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter password"
+              required
+            />
+            <button
+              type="button"
+              className="eye"
+              onClick={() => setShowPass((s) => !s)}
+            >
+              {showPass ? "🙈" : "👁"}
+            </button>
+          </div>
+
+          <div className="rowLine">
+            <span style={{ fontSize: 12, color: "rgba(0,0,0,.55)" }}>
+              Use registered phone & password
+            </span>
+            <button type="button" className="linkLike" onClick={() => navigate("/forgot-password")}>
+  Forgot Password
+</button>
+          </div>
+
+          <button className="blackBtn" disabled={loading}>
+            {loading ? "Signing in..." : "Sign In"}
+          </button>
+        </form>
+
+        <p className="bottomText">
+          Don’t have account?{" "}
+          <Link className="bottomLink" to="/register">
+            Sign up
+          </Link>
+        </p>
+       
+
+      </div>
+    </div>
+  </div>
+);
 }

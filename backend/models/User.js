@@ -1,20 +1,25 @@
 const mongoose = require("mongoose");
 
-const userSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  role: { type: String, enum: ["client", "worker"], required: true },
-  skills: [String],
-  wallet: { type: Number, default: 0 },
-  avatar: String,
-   balance:{
-  type:Number,
-  default:0
- }
-  
-},{timestamps:true});
+const userSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true },
 
+    phone: { type: String, required: true, unique: true },
+    email: { type: String, default: null }, // optional
 
+    password: { type: String, required: true },
 
-module.exports = mongoose.model("User",userSchema);
+    role: { type: String, enum: ["partner", "client"], default: "partner" },
+
+    balance: { type: Number, default: 0, currency: "INR" },
+    skills: { type: [String], default: [] }, // e.g. ["mason","plumber"]
+    online: { type: Boolean, default: true },
+
+    // OTP (mock)
+    otpCode: { type: String, default: null },
+    otpExpires: { type: Date, default: null },
+  },
+  { timestamps: true },
+);
+
+module.exports = mongoose.model("User", userSchema);

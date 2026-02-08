@@ -1,12 +1,19 @@
 const router = require("express").Router();
-const {createJob,getJobs,applyJob,acceptWorker} = require("../controllers/jobController");
-const auth = require("../middlewares/auth");
+const auth = require("../middlewares/auth"); // check folder name: middleware or middlewares
 
-router.post("/",auth,createJob);
-router.get("/",getJobs);
+const {
+  getJobs,
+  acceptJob,
+  rejectJob
+} = require("../controllers/jobController");
 
-router.post("/:id/apply",auth,applyJob);
-router.post("/:id/accept",auth,acceptWorker);
-router.post("/:id/complete",auth,completeJob);
+// Get jobs (with optional ?category=)
+router.get("/", auth, getJobs);
+
+// Accept job
+router.put("/:id/accept", auth, acceptJob);
+
+// Reject job
+router.put("/:id/reject", auth, rejectJob);
 
 module.exports = router;
