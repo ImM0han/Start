@@ -9,6 +9,7 @@ import MyJobs from "./pages/MyJobs";
 import Profile from "./pages/Profile";
 import Chat from "./pages/Chat";
 import ForgotPassword from "./pages/ForgotPassword";
+import Wallet from "./pages/Wallet";
 
 
 function Private({ children }) {
@@ -40,6 +41,7 @@ function AppContent() {
        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/dashboard" element={<Private><Dashboard /></Private>} />
         <Route path="/myjobs" element={<Private><MyJobs /></Private>} />
+        <Route path="/wallet" element={<Private><Wallet /></Private>} />
         <Route path="/profile" element={<Private><Profile /></Private>} />
         <Route path="/chat/:jobId" element={<Private><Chat /></Private>} />
       </Routes>

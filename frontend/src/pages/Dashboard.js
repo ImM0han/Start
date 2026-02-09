@@ -54,20 +54,6 @@ export default function Dashboard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Partner: toggle online
-  const toggleOnline = async () => {
-    if (!me) return;
-    const next = !(me.online ?? true);
-
-    setMe((p) => ({ ...p, online: next }));
-    try {
-      await API.put("/auth/me", { online: next });
-    } catch {
-      setMe((p) => ({ ...p, online: !next }));
-      alert("Failed to update online status");
-    }
-  };
-
   // Accept/Reject
   const acceptJob = async (id) => {
     try {
@@ -87,9 +73,26 @@ export default function Dashboard() {
     }
   };
 
-  const name = useMemo(() => me?.name || localStorage.getItem("name") || "User", [me]);
-  const online = useMemo(() => me?.online ?? true, [me]);
+  const name = useMemo(
+    () => me?.name || localStorage.getItem("name") || "User",
+    [me]
+  );
   const wallet = useMemo(() => Number(me?.balance ?? 0), [me]);
+
+  // Header badge text:
+  // - Partner with skills: show their skills (comma separated)
+  // - Partner without skills: show "Partner"
+  // - Others: show capitalized role name
+  const roleLabel = useMemo(() => {
+    if (role === "partner") {
+      const skills = me?.skills || [];
+      if (skills.length > 0) {
+        return skills.join(", ");
+      }
+      return "Partner";
+    }
+    return cap(role || "User");
+  }, [role, me]);
 
   const formatMoney = (n) =>
     Number(n || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -121,18 +124,11 @@ export default function Dashboard() {
     <div className="dashWalletValue">₹ {formatMoney(wallet)}</div>
   </div>
 
-  {/* RIGHT = Name + role + status */}
+  {/* RIGHT = Name + role / skills */}
   <div className="dashGreenRight">
     <div className="dashUserName">{name}</div>
     <div className="dashMiniRow">
-      <span className="dashRole">{role}</span>
-
-      {role === "partner" && (
-        <button type="button" className="dashOnlineBtn" onClick={toggleOnline}>
-          <span className={online ? "dashDot on" : "dashDot off"} />
-          {online ? "Online" : "Offline"}
-        </button>
-      )}
+      <span className="dashRole">{roleLabel}</span>
     </div>
   </div>
 </div>

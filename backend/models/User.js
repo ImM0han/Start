@@ -15,6 +15,19 @@ const userSchema = new mongoose.Schema(
     skills: { type: [String], default: [] }, // e.g. ["mason","plumber"]
     online: { type: Boolean, default: true },
 
+    // profile extras
+    address: { type: String, default: "" },
+    avatarUrl: { type: String, default: "" },
+
+    // verification
+    aadhaarNumber: { type: String, default: "" },
+    aadhaarVerified: { type: Boolean, default: false },
+
+    // preferences
+    language: { type: String, default: "English" },
+    pushNotifications: { type: Boolean, default: true },
+    biometric: { type: Boolean, default: false },
+
     // OTP (mock)
     otpCode: { type: String, default: null },
     otpExpires: { type: Date, default: null },
