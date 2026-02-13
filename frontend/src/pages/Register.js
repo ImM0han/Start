@@ -57,6 +57,7 @@ export default function Register() {
 });
 
 
+
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("role", res.data.user.role);
       localStorage.setItem("name", res.data.user.name);

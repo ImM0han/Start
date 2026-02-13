@@ -18,11 +18,8 @@ export default function Login() {
 
       const cleanPhone = phone.replace(/\D/g, "").slice(0, 10);
 
-      const res = await API.post("/auth/login", {
-        phone: cleanPhone,
-        phoneE164: `+91${cleanPhone}`, // ✅ fallback (doesn't break if backend ignores it)
-        password,
-      });
+      const res = await API.post("/auth/login", { phone, password });
+
 
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("role", res.data.user.role);
