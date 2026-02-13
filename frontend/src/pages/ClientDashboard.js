@@ -3,18 +3,19 @@ import { useNavigate } from "react-router-dom";
 import API from "../api/api";
 import BottomNav from "../components/BottomNav";
 
-export default function Dashboard() {
+export default function ClientDashboard() {
   const [loading, setLoading] = useState(true);
   const [jobs, setJobs] = useState([]);
   const [user, setUser] = useState(null);
-
+  
   const navigate = useNavigate();
   const role = localStorage.getItem("role");
-
-  // If user is a client, redirect to client dashboard
+  
+  // If user is not a client, redirect appropriately
   useEffect(() => {
-    if (role === "client") {
-      navigate("/client-dashboard");
+    if (role && role !== "client") {
+      // If they're a partner, redirect to partner dashboard
+      navigate("/dashboard");
     }
   }, [role, navigate]);
 
@@ -46,30 +47,12 @@ export default function Dashboard() {
     init();
   }, []);
 
-  const acceptJob = async (jobId) => {
-    if (!window.confirm("Accept this job?")) return;
-
-    try {
-      await API.post(`/jobs/${jobId}/accept`);
-      // Refresh jobs after accepting
-      loadJobs();
-      alert("Job accepted!");
-    } catch (err) {
-      alert(err?.response?.data?.msg || "Failed to accept job");
-    }
+  const postJob = () => {
+    navigate("/post-job");
   };
 
   const viewProfile = () => {
     navigate("/profile");
-  };
-
-  // cap function - moved to the top to avoid function-use-before-definition error
-  const cap = (s) => {
-    if (!s) return "";
-    return s
-      .split(" ")
-      .map((p) => p[0]?.toUpperCase() + p.slice(1)?.toLowerCase())
-      .join(" ");
   };
 
   if (loading) {
@@ -117,10 +100,10 @@ export default function Dashboard() {
           <div className="pHeaderLeft">
             <div className="squareIcon">💼</div>
             <div>
-              <div className="pName">Hi, {cap(user?.name)}!</div>
+              <div className="pName">Hi, {user?.name || "Client"}!</div>
               <button className="pOnlineBtn">
                 <span className="pDot on"></span>
-                <span>Online</span>
+                <span>Available</span>
               </button>
             </div>
           </div>
@@ -136,7 +119,7 @@ export default function Dashboard() {
                   justifyContent: 'center'
                 }}
               >
-                {!user?.avatarUrl && (user?.name?.charAt(0)?.toUpperCase() || 'P')}
+                {!user?.avatarUrl && (user?.name?.charAt(0)?.toUpperCase() || 'C')}
               </div>
               <div className="bell">🔔</div>
             </div>
@@ -149,7 +132,7 @@ export default function Dashboard() {
 
         {/* Body */}
         <div className="pBody">
-          <h2 className="nearbyTitleWeb">Nearby Jobs</h2>
+          <h2 className="nearbyTitleWeb">Available Jobs</h2>
           
           {jobs.length === 0 ? (
             <div className="pEmpty">
@@ -171,8 +154,8 @@ export default function Dashboard() {
                   </div>
                   
                   <div className="pMeta">
-                    <span>👷 {job.clientName}</span>
-                    <span>📍 {job.location}</span>
+                    <span>👷 {job.partnerName || "Any Partner"}</span>
+                    <span>📍 {job.location || "Anywhere"}</span>
                   </div>
                   
                   <div className="pPay">₹{job.budget}</div>
@@ -181,16 +164,10 @@ export default function Dashboard() {
                   
                   <div className="pActions">
                     <button 
-                      className="pReject"
-                      onClick={() => navigate(`/chat/${job._id}`)}
-                    >
-                      Chat
-                    </button>
-                    <button 
                       className="pAccept"
-                      onClick={() => acceptJob(job._id)}
+                      onClick={() => navigate(`/job/${job._id}`)}
                     >
-                      Accept
+                      View Details
                     </button>
                   </div>
                 </div>

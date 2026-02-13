@@ -10,10 +10,18 @@ import Profile from "./pages/Profile";
 import Chat from "./pages/Chat";
 import ForgotPassword from "./pages/ForgotPassword";
 import Wallet from "./pages/Wallet";
-
+import ClientDashboard from "./pages/ClientDashboard";
+import PostJob from "./pages/PostJob";
 
 function Private({ children }) {
   const token = localStorage.getItem("token");
+  const role = localStorage.getItem("role");
+  
+  // If user is authenticated and tries to access splash page, redirect to appropriate dashboard
+  if (token && window.location.pathname === "/") {
+    return role === "client" ? <Navigate to="/client-dashboard" replace /> : <Navigate to="/dashboard" replace />;
+  }
+  
   return token ? children : <Navigate to="/login" replace />;
 }
 
@@ -28,7 +36,8 @@ function AppContent() {
     location.pathname.startsWith("/myjobs") ||
     location.pathname.startsWith("/wallet") ||
     location.pathname.startsWith("/profile") ||
-    location.pathname.startsWith("/post-job"); // splash + auth pages
+    location.pathname.startsWith("/post-job") ||
+    location.pathname.startsWith("/client-dashboard"); // splash + auth pages
 
   return (
     <>
@@ -38,8 +47,10 @@ function AppContent() {
         <Route path="/" element={<Splash />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-       <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/dashboard" element={<Private><Dashboard /></Private>} />
+        <Route path="/client-dashboard" element={<Private><ClientDashboard /></Private>} />
+        <Route path="/post-job" element={<Private><PostJob /></Private>} />
         <Route path="/myjobs" element={<Private><MyJobs /></Private>} />
         <Route path="/wallet" element={<Private><Wallet /></Private>} />
         <Route path="/profile" element={<Private><Profile /></Private>} />

@@ -35,4 +35,8 @@ const userSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+// Index for efficient cleanup of temporary users
+userSchema.index({ name: 1, createdAt: 1 });
+userSchema.index({ otpExpires: 1 });
+
 module.exports = mongoose.model("User", userSchema);
