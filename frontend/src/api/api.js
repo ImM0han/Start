@@ -1,32 +1,14 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "/api", // ✅ important (proxy will forward to backend)
+  // Works even if proxy is missing
+  baseURL: process.env.REACT_APP_API_URL || "http://localhost:5000/api",
 });
 
-
-
-// ✅ Attach token on every request
-API.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("token");
-    if (token) config.headers.Authorization = `Bearer ${token}`;
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
-// ✅ Optional: handle 401 globally (avoid random “Session expired” spam)
-API.interceptors.response.use(
-  (res) => res,
-  (err) => {
-    if (err?.response?.status === 401) {
-      // token invalid/expired OR missing
-      // you can redirect to login if you want:
-      // window.location.href = "/login";
-    }
-    return Promise.reject(err);
-  }
-);
+API.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
 
 export default API;

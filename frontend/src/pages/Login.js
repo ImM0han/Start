@@ -17,8 +17,8 @@ export default function Login() {
       setLoading(true);
 
       const cleanPhone = phone.replace(/\D/g, "").slice(0, 10);
+const res = await API.post("/auth/login", { phone: cleanPhone, password });
 
-      const res = await API.post("/auth/login", { phone, password });
 
 
       localStorage.setItem("token", res.data.token);
