@@ -92,56 +92,61 @@ const getSkillEmoji = (skill) => {
 
         {/* Header */}
         <div className="pHeader">
-          <div className="pHeaderLeft">
-            <div className="squareIcon">
-  {Array.isArray(user?.skills) && user.skills.length > 0
-    ? getSkillEmoji(user.skills[0])
-    : "💼"}
+  {/* LEFT */}
+  <div className="pHeaderLeft">
+    <div className="squareIcon">
+      {Array.isArray(user?.skills) && user.skills.length > 0
+        ? getSkillEmoji(user.skills[0])
+        : "💼"}
+    </div>
+
+    <div className="pHeaderInfo">
+      <div className="pName">
+        {loading ? "Loading..." : `Hi, ${cap(user?.name)}!`}
+      </div>
+
+      {/* Skills/status pill like screenshot */}
+      <div className="pSkillsRow">
+        {Array.isArray(user?.skills) && user.skills.length > 0 ? (
+          user.skills.slice(0, 2).map((sk) => (
+            <span key={sk} className="pSkillPill">{sk}</span>
+          ))
+        ) : (
+          <span className="pSkillHint">Select skills in Profile</span>
+        )}
+
+        {Array.isArray(user?.skills) && user.skills.length > 2 && (
+          <span className="pSkillMore">+{user.skills.length - 2}</span>
+        )}
+      </div>
+    </div>
+  </div>
+
+  {/* RIGHT */}
+  <div className="pHeaderRight">
+    <div className="pRightTop">
+      <div
+        className="avatarCircle"
+        style={{
+          backgroundImage: user?.avatarUrl ? `url(${user?.avatarUrl})` : "none",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          display: user?.avatarUrl ? "block" : "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        {!user?.avatarUrl && getInitial(user?.name)}
+      </div>
+      <div className="bell">🔔</div>
+    </div>
+
+    <div className="walletBox">
+      <div className="walletLabel">Wallet Balance</div>
+      <div className="walletValue">₹{user?.balance || 0}</div>
+    </div>
+  </div>
 </div>
-            <div>
-              <div className="pName">
-                {loading ? "Loading..." : `Hi, ${cap(user?.name)}!`}
-              </div>
-              <div className="pSkillsRow">
-  {Array.isArray(user?.skills) && user.skills.length > 0 ? (
-    user.skills.slice(0, 3).map((sk) => (
-      <span key={sk} className="pSkillPill">{sk}</span>
-    ))
-  ) : (
-    <span className="pSkillHint">Select skills in Profile</span>
-  )}
-
-  {Array.isArray(user?.skills) && user.skills.length > 3 && (
-    <span className="pSkillMore">+{user.skills.length - 3}</span>
-  )}
-</div>
-            </div>
-          </div>
-
-          <div className="pHeaderRight">
-            <div className="avatarWrap">
-              <div
-                className="avatarCircle"
-                style={{
-                  backgroundImage: user?.avatarUrl ? `url(${user?.avatarUrl})` : "none",
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                  display: user?.avatarUrl ? "block" : "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                {!user?.avatarUrl && getInitial(user?.name)}
-              </div>
-              <div className="bell">🔔</div>
-            </div>
-
-            <div className="walletBox">
-              <div className="walletLabel">Balance</div>
-              <div className="walletValue">₹{user?.balance || 0}</div>
-            </div>
-          </div>
-        </div>
 
         {/* Body */}
         <div className="pBody">

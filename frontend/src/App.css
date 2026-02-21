@@ -2838,5 +2838,448 @@ body { margin: 0; }
     justify-content: space-between;
   }
 }
+/* ===== Green header layout like reference screenshot ===== */
+
+.pHeader{
+  background:#2f8f3e !important;
+  color:#fff !important;
+  border-radius: 30px !important;
+  padding: 18px 18px !important;
+
+  display:flex !important;
+  align-items:flex-start !important;   /* key: top aligned like screenshot */
+  justify-content:space-between !important;
+  gap: 14px !important;
+
+  box-shadow: 0 10px 26px rgba(0,0,0,.10) !important;
+}
+
+/* LEFT SIDE */
+.pHeaderLeft{
+  display:flex !important;
+  align-items:flex-start !important;
+  gap: 12px !important;
+  min-width: 0 !important;
+}
+
+/* icon box: perfectly centered */
+.squareIcon{
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 14px !important;
+  display:grid !important;
+  place-items:center !important;
+
+  background: rgba(255,255,255,.18) !important;
+  border: 1px solid rgba(255,255,255,.22) !important;
+
+  font-size: 20px !important;
+  line-height: 1 !important;
+  flex: 0 0 auto !important;
+}
+
+/* name + pills */
+.pHeaderInfo{
+  display:flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  min-width: 0 !important;
+}
+
+.pName{
+  font-size: 16px !important;
+  font-weight: 950 !important;
+  line-height: 1.1 !important;
+
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* skills row */
+.pSkillsRow{
+  display:flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+  align-items:center !important;
+}
+
+.pSkillPill, .pSkillHint, .pSkillMore{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+
+  padding: 7px 12px !important;
+  border-radius: 999px !important;
+  font-size: 12px !important;
+  font-weight: 900 !important;
+  white-space: nowrap !important;
+}
+
+.pSkillPill{
+  background: rgba(255,255,255,.18) !important;
+  border: 1px solid rgba(255,255,255,.22) !important;
+  color:#fff !important;
+  text-transform: capitalize !important;
+}
+
+.pSkillHint{
+  background: rgba(255,255,255,.14) !important;
+  border: 1px solid rgba(255,255,255,.18) !important;
+  color: rgba(255,255,255,.92) !important;
+}
+
+.pSkillMore{
+  background: rgba(0,0,0,.18) !important;
+  border: 1px solid rgba(255,255,255,.18) !important;
+  color:#fff !important;
+}
+
+/* RIGHT SIDE (stacked like screenshot) */
+.pHeaderRight{
+  display:flex !important;
+  flex-direction: column !important;
+  align-items:flex-end !important;
+  gap: 10px !important;
+  flex: 0 0 auto !important;
+}
+
+.pRightTop{
+  display:flex !important;
+  align-items:center !important;
+  gap: 10px !important;
+}
+
+/* avatar */
+.avatarCircle{
+  width: 38px !important;
+  height: 38px !important;
+  border-radius: 999px !important;
+  overflow:hidden !important;
+
+  background: rgba(255,255,255,.22) !important;
+  border: 1px solid rgba(255,255,255,.22) !important;
+
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+
+  color:#fff !important;
+  font-weight: 950 !important;
+  font-size: 13px !important;
+}
+
+/* bell */
+.bell{
+  width: 30px !important;
+  height: 30px !important;
+  border-radius: 12px !important;
+
+  background: rgba(255,255,255,.18) !important;
+  border: 1px solid rgba(255,255,255,.18) !important;
+
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+
+/* wallet block */
+.walletBox{
+  text-align:right !important;
+}
+
+.walletLabel{
+  font-size: 12px !important;
+  opacity: .95 !important;
+}
+
+.walletValue{
+  margin-top: 4px !important;
+  font-size: 16px !important;
+  font-weight: 950 !important;
+}
+
+/* MOBILE: stack right section under left cleanly */
+@media (max-width: 520px){
+  .pHeader{
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  .pHeaderRight{
+    align-items: flex-start !important;
+  }
+  .walletBox{
+    text-align:left !important;
+  }
+}
+/* ===== FORCE HEADER INTO 2 COLUMNS (LEFT / RIGHT) ===== */
+.pHeader{
+  display:flex !important;
+  flex-direction: row !important;
+  align-items:flex-start !important;
+  justify-content: space-between !important;
+}
+
+/* Left takes remaining width */
+.pHeaderLeft{
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+}
+
+/* Right stays on the right always */
+.pHeaderRight{
+  flex: 0 0 auto !important;
+  margin-left: auto !important;     /* key: pushes it to the right */
+  align-items: flex-end !important; /* keeps it right-aligned */
+}
+
+/* Make sure right items don't wrap weirdly */
+.pRightTop{
+  display:flex !important;
+  justify-content:flex-end !important;
+  width: 100% !important;
+}
+
+.walletBox{
+  width: max-content !important;
+  text-align: right !important;
+}
+/* ===== Mobile: Bottom Nav always sticky/fixed ===== */
+@media (max-width: 767px){
+  .appNav, .bottomNav, .uberNavBar{
+    position: fixed !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    bottom: 12px !important;
+    top: auto !important;
+
+    width: min(520px, calc(100vw - 24px)) !important;
+    z-index: 9999 !important;
+  }
+
+  /* prevents page content from hiding behind the nav */
+  .mobileNavSpacer{
+    height: 96px !important;
+  }
+}
+/* ==========================================
+   ENHANCED JOB CARDS (Premium UI)
+========================================== */
+
+/* Card container */
+.pCard{
+  background:#fff !important;
+  border-radius: 18px !important;
+  padding: 16px !important;
+  margin-bottom: 14px !important;
+
+  border: 1px solid rgba(0,0,0,.06) !important;
+  box-shadow: 0 10px 26px rgba(0,0,0,.07) !important;
+
+  transition: transform .12s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+.pCard:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 14px 34px rgba(0,0,0,.10) !important;
+  border-color: rgba(0,0,0,.10) !important;
+}
+
+/* Title + category pill row */
+.pCardTop{
+  display:flex !important;
+  align-items:flex-start !important;
+  justify-content:space-between !important;
+  gap: 10px !important;
+  margin-bottom: 10px !important;
+}
+
+.pJobTitle{
+  font-size: 16px !important;
+  font-weight: 950 !important;
+  color: #111 !important;
+  line-height: 1.15 !important;
+  letter-spacing: -0.2px !important;
+  margin: 0 !important;
+}
+
+.pPill{
+  padding: 6px 10px !important;
+  border-radius: 999px !important;
+  background: rgba(47,143,62,.12) !important;
+  border: 1px solid rgba(47,143,62,.22) !important;
+  color: #2f8f3e !important;
+  font-size: 11px !important;
+  font-weight: 900 !important;
+  text-transform: capitalize !important;
+  white-space: nowrap !important;
+}
+
+/* Meta row (client / location) */
+.pMeta{
+  display:flex !important;
+  flex-wrap: wrap !important;
+  gap: 10px 14px !important;
+
+  font-size: 12px !important;
+  color: rgba(0,0,0,.62) !important;
+
+  margin-bottom: 10px !important;
+}
+
+.pMeta span{
+  display:inline-flex !important;
+  align-items:center !important;
+  gap: 6px !important;
+}
+
+/* Pay */
+.pPay{
+  font-size: 16px !important;
+  font-weight: 950 !important;
+  color: #111 !important;
+  margin-bottom: 8px !important;
+}
+
+/* Description */
+.pDesc{
+  font-size: 12.5px !important;
+  color: rgba(0,0,0,.62) !important;
+  line-height: 1.4 !important;
+
+  margin-bottom: 14px !important;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 3;      /* keeps card height consistent */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Buttons */
+.pActions{
+  display:flex !important;
+  gap: 12px !important;
+}
+
+.pAccept, .pReject{
+  flex: 1 !important;
+  height: 44px !important;
+  border-radius: 14px !important;
+  border: none !important;
+  font-weight: 950 !important;
+  cursor: pointer !important;
+
+  transition: transform .08s ease, filter .18s ease, box-shadow .18s ease;
+}
+
+.pAccept{
+  background: #2f8f3e !important;
+  color: #fff !important;
+  box-shadow: 0 10px 20px rgba(47,143,62,.22) !important;
+}
+
+.pReject{
+  background: #d83939 !important;
+  color: #fff !important;
+  box-shadow: 0 10px 20px rgba(216,57,57,.18) !important;
+}
+
+.pAccept:hover, .pReject:hover{
+  filter: brightness(.97);
+}
+
+.pAccept:active, .pReject:active{
+  transform: scale(.98);
+}
+
+/* Empty state card */
+.pEmpty{
+  background:#fff !important;
+  border-radius: 18px !important;
+  border: 1px solid rgba(0,0,0,.06) !important;
+  box-shadow: 0 10px 26px rgba(0,0,0,.07) !important;
+}
+
+/* Mobile spacing tweaks */
+@media (max-width: 420px){
+  .pCard{ padding: 14px !important; border-radius: 16px !important; }
+  .pJobTitle{ font-size: 15px !important; }
+  .pDesc{ -webkit-line-clamp: 4; }
+  .pAccept, .pReject{ height: 42px !important; }
+}
+/* ==========================================
+   BUTTON HOVER + TAP ANIMATION (ACCEPT / CHAT)
+========================================== */
+
+.pActions button{
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.18s ease,
+    filter 0.18s ease,
+    background 0.18s ease;
+}
+
+/* ---------- ACCEPT BUTTON ---------- */
+.pAccept{
+  background: #2f8f3e !important;
+  box-shadow: 0 10px 22px rgba(47,143,62,.22);
+}
+
+/* hover (desktop) */
+@media (hover:hover){
+  .pAccept:hover{
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 16px 32px rgba(47,143,62,.32);
+    filter: brightness(1.03);
+  }
+}
+
+/* tap / click */
+.pAccept:active{
+  transform: scale(0.96);
+  box-shadow: 0 6px 14px rgba(47,143,62,.28);
+}
+
+/* ---------- CHAT BUTTON ---------- */
+.pReject{
+  background: #ffffff !important;
+  color: #2f8f3e !important;
+  border: 2px solid #2f8f3e !important;
+  box-shadow: 0 6px 16px rgba(47,143,62,.12);
+}
+
+/* hover (desktop) */
+@media (hover:hover){
+  .pReject:hover{
+    transform: translateY(-2px) scale(1.02);
+    background: rgba(47,143,62,.06) !important;
+    box-shadow: 0 14px 28px rgba(47,143,62,.20);
+  }
+}
+
+/* tap / click */
+.pReject:active{
+  transform: scale(0.96);
+  background: rgba(47,143,62,.12) !important;
+  box-shadow: 0 6px 14px rgba(47,143,62,.18);
+}
+
+/* ---------- RIPPLE EFFECT (SUBTLE) ---------- */
+.pActions button::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background: radial-gradient(circle, rgba(255,255,255,.35) 10%, transparent 10.5%);
+  background-size: 0% 0%;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: background-size .35s ease;
+}
+
+.pActions button:active::after{
+  background-size: 120% 120%;
+}
 
 
