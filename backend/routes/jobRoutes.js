@@ -1,19 +1,26 @@
 const router = require("express").Router();
-const auth = require("../middlewares/auth"); // check folder name: middleware or middlewares
+const auth = require("../middlewares/auth.js");
 
 const {
   getJobs,
+  createJob,
   acceptJob,
-  rejectJob
+  rejectJob,
+  // added (won't break partner even if unused)
+  getMyJobs,
 } = require("../controllers/jobController");
 
-// Get jobs (with optional ?category=)
+// partner dashboard (existing)
 router.get("/", auth, getJobs);
 
-// Accept job
+// partner actions (existing)
 router.put("/:id/accept", auth, acceptJob);
-
-// Reject job
 router.put("/:id/reject", auth, rejectJob);
+
+// client post job (existing in many setups; keep only if you had it before)
+router.post("/", auth, createJob);
+
+// client dashboard: my jobs (NEW, doesn’t affect partner)
+if (getMyJobs) router.get("/my", auth, getMyJobs);
 
 module.exports = router;

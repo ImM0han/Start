@@ -12,6 +12,9 @@ mongoose.connect(process.env.MONGO_URI)
 const io = new Server(server,{
  cors:{origin:"*"}
 });
+// const clientRoutes = require("./routes/clientRoutes");
+// app.use("/api/client", clientRoutes);
+
 
 io.on("connection",(socket)=>{
  console.log("User connected");

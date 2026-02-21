@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const { register, login, sendOtp } = require("../controllers/authController");
-const auth = require("../middlewares/auth");
+const auth = require("../middlewares/auth.js");
 const User = require("../models/User");
 const { forgotPasswordSendOtp, resetPassword } = require("../controllers/authController");
 

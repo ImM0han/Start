@@ -50,7 +50,7 @@ export default function Dashboard() {
     if (!window.confirm("Accept this job?")) return;
 
     try {
-      await API.put(`/jobs/${jobId}/accept`);
+      await API.post(`/jobs/${jobId}/accept`);
       // Refresh jobs after accepting
       loadJobs();
       alert("Job accepted!");
